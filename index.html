@@ -31,7 +31,7 @@
   --mono:'Space Mono',monospace;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font)}
-body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
+body{display:flex;flex-direction:column;width:100%;max-width:430px;margin:0 auto;position:relative}
 
 /* NAV */
 nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
@@ -77,6 +77,20 @@ nav button svg{width:22px;height:22px;stroke-width:1.8}
 .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
 .chip.saved{background:rgba(0,229,160,.12);color:var(--accent)}
 .chip.override{background:rgba(255,165,2,.12);color:var(--warn)}
+
+/* GAS */
+.gas-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.gas-stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.gas-stat-label{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.gas-stat-value{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text)}
+.gas-stat-value.good{color:var(--accent)}
+.gas-stat-value.bad{color:var(--danger)}
+.gas-summary{border-radius:var(--radius);padding:18px;margin-top:12px;border:1px solid var(--border);background:var(--surface2)}
+.gas-summary.good{border-color:rgba(0,229,160,.3);background:rgba(0,229,160,.08)}
+.gas-summary.bad{border-color:rgba(255,71,87,.3);background:rgba(255,71,87,.08)}
+.gas-summary-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.gas-summary-copy{font-size:13px;color:var(--muted);line-height:1.45}
+.helper-text{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
 
 /* LISTS */
 .lists-toolbar{padding:0 16px 12px;display:flex;gap:8px}
@@ -229,6 +243,72 @@ nav button svg{width:22px;height:22px;stroke-width:1.8}
     <div id="lists-container"></div>
   </div>
 
+  <!-- CARGA DE GAS -->
+  <div class="page" id="page-gas">
+    <div class="page-header">
+      <h1 class="page-title">Carga de <span>Gas</span></h1>
+    </div>
+
+    <div class="calc-card">
+      <div class="tc-row">
+        <div class="tc-badge">TC: $<span class="tc-val" id="gas-tc-display">18.50</span></div>
+        <span class="chip saved">USD a MXN</span>
+      </div>
+      <div class="gas-grid">
+        <div class="input-group">
+          <label>Gasolina México por litro</label>
+          <span class="prefix">$</span>
+          <input class="has-prefix" type="number" id="gas-mx-liter" placeholder="ej. 24.50" step="0.01" inputmode="decimal" oninput="calcGas()">
+        </div>
+        <div class="input-group">
+          <label>Gasolina USA por galón</label>
+          <span class="prefix">$</span>
+          <input class="has-prefix" type="number" id="gas-us-gallon" placeholder="ej. 3.15" step="0.01" inputmode="decimal" oninput="calcGas()">
+        </div>
+        <div class="input-group">
+          <label>Litros de carga</label>
+          <input type="number" id="gas-liters" placeholder="ej. 50" step="0.1" inputmode="decimal" oninput="calcGas()">
+        </div>
+      </div>
+      <div class="helper-text">Compara el precio real por litro usando el tipo de cambio guardado. USA se convierte de USD/galón a MXN/litro.</div>
+    </div>
+
+    <div class="calc-card">
+      <div class="gas-grid">
+        <div class="gas-stat">
+          <div class="gas-stat-label">USA convertido</div>
+          <div class="gas-stat-value" id="gas-us-liter">$0.00/L</div>
+        </div>
+        <div class="gas-stat">
+          <div class="gas-stat-label">Diferencia por litro</div>
+          <div class="gas-stat-value" id="gas-diff-liter">$0.00</div>
+        </div>
+        <div class="gas-stat">
+          <div class="gas-stat-label">Ahorro por carga</div>
+          <div class="gas-stat-value" id="gas-trip-saving">$0.00</div>
+        </div>
+      </div>
+      <div class="gas-summary" id="gas-summary">
+        <div class="gas-summary-title" id="gas-summary-title">Ingresa ambos precios</div>
+        <div class="gas-summary-copy" id="gas-summary-copy">Cuando captures México por litro y USA por galón, te diré cuál conviene y cuánto cambia por carga.</div>
+      </div>
+    </div>
+
+    <div class="calc-card" style="padding:16px 20px">
+      <div style="font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Referencia</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="gas-stat" style="padding:12px">
+          <div class="gas-stat-label">1 galón</div>
+          <div class="gas-stat-value" style="font-size:16px">3.785 L</div>
+        </div>
+        <div class="gas-stat" style="padding:12px">
+          <div class="gas-stat-label">Fórmula</div>
+          <div class="gas-stat-value" style="font-size:16px">USD × TC ÷ 3.785</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- CONFIGURACIÓN -->
   <div class="page" id="page-settings">
     <div class="page-header">
@@ -334,6 +414,10 @@ nav button svg{width:22px;height:22px;stroke-width:1.8}
   <button id="nav-lists" onclick="goPage('lists')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></svg>
     Listas
+  </button>
+  <button id="nav-gas" onclick="goPage('gas')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17"/><path d="M7 10h6"/><path d="M18 7l2 2v9a2 2 0 0 1-2 2h-2"/><path d="M20 9h-2"/></svg>
+    Gas
   </button>
   <button id="nav-settings" onclick="goPage('settings')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -450,6 +534,7 @@ let state = {
   tax: 0,
   stores: ['Walmart','Costco','Sam\'s Club','H-E-B','Target'],
   lists: [],
+  gas: {mxLiter:'', usGallon:'', liters:''},
   forexApiKey: '',
   forexLastFetched: null
 };
@@ -460,13 +545,18 @@ let listTab = 'stores';
 
 function load(){
   const s = localStorage.getItem('shopconv');
-  if(s) state = Object.assign({tc:18.50,tax:0,stores:['Walmart','Costco',"Sam's Club",'H-E-B','Target'],lists:[],forexApiKey:'',forexLastFetched:null}, JSON.parse(s));
+  if(s) state = Object.assign({tc:18.50,tax:0,stores:['Walmart','Costco',"Sam's Club",'H-E-B','Target'],lists:[],gas:{mxLiter:'',usGallon:'',liters:''},forexApiKey:'',forexLastFetched:null}, JSON.parse(s));
+  state.gas = Object.assign({mxLiter:'',usGallon:'',liters:''}, state.gas||{});
   document.getElementById('tc-setting').value = state.tc;
   document.getElementById('tax-setting').value = state.tax||0;
+  document.getElementById('gas-mx-liter').value = state.gas.mxLiter;
+  document.getElementById('gas-us-gallon').value = state.gas.usGallon;
+  document.getElementById('gas-liters').value = state.gas.liters;
   if(state.forexApiKey) document.getElementById('forex-api-key').value = state.forexApiKey;
   updateForexLastFetched();
   document.getElementById('tc-refresh-btn').style.display = state.forexApiKey ? 'inline-flex' : 'none';
   renderTcDisplay();
+  calcGas();
   renderStores();
   renderLists();
   renderQuickGrid();
@@ -481,6 +571,7 @@ function goPage(p){
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('nav-'+p).classList.add('active');
   if(p==='lists') renderLists();
+  if(p==='gas') calcGas();
 }
 
 // ── CALCULATOR ──
@@ -496,6 +587,8 @@ function renderTcDisplay(){
   const chip = document.getElementById('tc-chip');
   chip.textContent = ov ? 'Override' : 'Guardado';
   chip.className = 'chip ' + (ov ? 'override' : 'saved');
+  const gasTc = document.getElementById('gas-tc-display');
+  if(gasTc) gasTc.textContent = using.toFixed(2);
 }
 function calcConvert(){
   renderTcDisplay();
@@ -517,8 +610,67 @@ function openQuickAddFromMain(){
 function clearOverride(){
   document.getElementById('tc-override').value='';
   calcConvert();
+  calcGas();
 }
 function fmt(n){return n.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// ── GAS ──
+const LITERS_PER_GALLON = 3.78541;
+
+function calcGas(){
+  const mxLiterInput = document.getElementById('gas-mx-liter');
+  const usGallonInput = document.getElementById('gas-us-gallon');
+  const litersInput = document.getElementById('gas-liters');
+  if(!mxLiterInput || !usGallonInput || !litersInput) return;
+
+  state.gas = {
+    mxLiter: mxLiterInput.value,
+    usGallon: usGallonInput.value,
+    liters: litersInput.value
+  };
+  save();
+
+  const mxLiter = parseFloat(mxLiterInput.value)||0;
+  const usGallon = parseFloat(usGallonInput.value)||0;
+  const liters = parseFloat(litersInput.value)||0;
+  const tc = getTc();
+  const usLiterMxn = usGallon > 0 ? (usGallon * tc) / LITERS_PER_GALLON : 0;
+  const diffLiter = mxLiter && usLiterMxn ? mxLiter - usLiterMxn : 0;
+  const tripSaving = diffLiter * liters;
+
+  document.getElementById('gas-tc-display').textContent = tc.toFixed(2);
+  document.getElementById('gas-us-liter').textContent = '$'+fmt(usLiterMxn)+'/L';
+  document.getElementById('gas-diff-liter').textContent = (diffLiter>=0?'$':'-$')+fmt(Math.abs(diffLiter))+'/L';
+  document.getElementById('gas-trip-saving').textContent = (tripSaving>=0?'$':'-$')+fmt(Math.abs(tripSaving));
+
+  document.getElementById('gas-diff-liter').className = 'gas-stat-value ' + (diffLiter>=0 ? 'good' : 'bad');
+  document.getElementById('gas-trip-saving').className = 'gas-stat-value ' + (tripSaving>=0 ? 'good' : 'bad');
+
+  const summary = document.getElementById('gas-summary');
+  const title = document.getElementById('gas-summary-title');
+  const copy = document.getElementById('gas-summary-copy');
+  summary.className = 'gas-summary';
+
+  if(!mxLiter || !usGallon){
+    title.textContent = 'Ingresa ambos precios';
+    copy.textContent = 'Cuando captures México por litro y USA por galón, te diré cuál conviene y cuánto cambia por carga.';
+    return;
+  }
+
+  const hasLiters = liters > 0;
+  if(diffLiter > 0){
+    summary.classList.add('good');
+    title.textContent = 'Conviene cargar en USA';
+    copy.textContent = `USA queda en $${fmt(usLiterMxn)} MXN por litro, ahorras $${fmt(diffLiter)} por litro${hasLiters ? ` y $${fmt(tripSaving)} en esta carga.` : '.'}`;
+  }else if(diffLiter < 0){
+    summary.classList.add('bad');
+    title.textContent = 'Conviene cargar en México';
+    copy.textContent = `USA queda en $${fmt(usLiterMxn)} MXN por litro, pagarías $${fmt(Math.abs(diffLiter))} más por litro${hasLiters ? ` y $${fmt(Math.abs(tripSaving))} más en esta carga.` : '.'}`;
+  }else{
+    title.textContent = 'El costo es igual';
+    copy.textContent = `Ambos precios equivalen a $${fmt(mxLiter)} MXN por litro.`;
+  }
+}
 
 function renderQuickGrid(){
   const amounts = [5,10,25,50,100,200,500,1000];
@@ -531,7 +683,7 @@ function renderQuickGrid(){
       <span style="font-size:13px;font-weight:600;font-family:var(--mono);color:var(--accent);white-space:nowrap">$${fmt(a*(1+tax)*tc)}</span>
     </div>`).join('');
 }
-document.getElementById('tc-override').addEventListener('input',()=>{calcConvert();renderQuickGrid();});
+document.getElementById('tc-override').addEventListener('input',()=>{calcConvert();calcGas();renderQuickGrid();});
 
 // ── SETTINGS ──
 function saveTc(){
@@ -540,6 +692,7 @@ function saveTc(){
   state.tc = v;
   save();
   renderTcDisplay();
+  calcGas();
   renderQuickGrid();
   toast('Tipo de cambio guardado','success');
 }
@@ -867,6 +1020,7 @@ async function fetchExchangeRate(){
     save();
     document.getElementById('tc-setting').value = state.tc;
     renderTcDisplay();
+    calcGas();
     renderQuickGrid();
     updateForexLastFetched();
     toast('Tasa actualizada: $'+state.tc+' MXN/USD','success');
@@ -880,6 +1034,5 @@ async function fetchExchangeRate(){
 
 load();
 </script>
-</head>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # ShopConverter
 
-Calculadora USD → MXN con listas de compras para tus compras en Estados Unidos.
+Calculadora USD → MXN con listas de compras y comparador de gasolina México vs USA.
 
 ## Características
 
@@ -9,6 +9,7 @@ Calculadora USD → MXN con listas de compras para tus compras en Estados Unidos
 - **Listas por tienda**: Walmart, Costco, Sam's, H-E-B, Target (configurables)
 - **Listas libres**: Sin categoría de tienda
 - **Productos**: Nombre, precio USD, cantidad y subtotal MXN automático
+- **Carga de Gas**: Compara gasolina de México por litro contra USA por galón, convertido a MXN/litro
 - **Persistencia**: Todo se guarda en el dispositivo (sin servidor)
 - **Exportar**: Descarga tus datos en JSON
 

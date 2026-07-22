@@ -1,7 +1,7 @@
 {
   "name": "ShopConverter",
   "short_name": "ShopConverter",
-  "description": "Calculadora USD a MXN con listas de compras",
+  "description": "Calculadora USD a MXN con listas y comparador de gasolina",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1923",
